@@ -183,7 +183,7 @@ class Peer {
     const event = arguments[0];
     const args = Array.prototype.slice.call(arguments).slice(1);
     const listeners = this._listeners[event];
-    console.log(">>>>>> emit", event, "args", args, "listeners", listeners);
+    this._debug("emit (event: %s, args: %o)", event, args);
     if (listeners) {
       listeners.forEach((l) => l.apply(l, args));
     }
