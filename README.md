@@ -13,6 +13,8 @@
 [sauce-image]: https://saucelabs.com/buildstatus/simple-peer
 [sauce-url]: https://saucelabs.com/u/simple-peer
 
+> This is a fork of the original https://github.com/feross/simple-peer repo and all changes are public domain.
+
 #### Simple WebRTC video, voice, and data channels
 
 ## features
@@ -32,11 +34,11 @@ This package is used by [WebTorrent](https://webtorrent.io) and [many others](#w
 
 - [install](#install)
 - [examples](#usage)
-  * [A simpler example](#a-simpler-example)
-  * [data channels](#data-channels)
-  * [video/voice](#videovoice)
-  * [dynamic video/voice](#dynamic-videovoice)
-  * [in node](#in-node)
+  - [A simpler example](#a-simpler-example)
+  - [data channels](#data-channels)
+  - [video/voice](#videovoice)
+  - [dynamic video/voice](#dynamic-videovoice)
+  - [in node](#in-node)
 - [api](#api)
 - [events](#events)
 - [error codes](#error-codes)
@@ -80,30 +82,30 @@ Let's create an html page that lets you manually connect two peers:
     <script src="simplepeer.min.js"></script>
     <script>
       const p = new SimplePeer({
-        initiator: location.hash === '#1',
-        trickle: false
-      })
+        initiator: location.hash === "#1",
+        trickle: false,
+      });
 
-      p.on('error', err => console.log('error', err))
+      p.on("error", (err) => console.log("error", err));
 
-      p.on('signal', data => {
-        console.log('SIGNAL', JSON.stringify(data))
-        document.querySelector('#outgoing').textContent = JSON.stringify(data)
-      })
+      p.on("signal", (data) => {
+        console.log("SIGNAL", JSON.stringify(data));
+        document.querySelector("#outgoing").textContent = JSON.stringify(data);
+      });
 
-      document.querySelector('form').addEventListener('submit', ev => {
-        ev.preventDefault()
-        p.signal(JSON.parse(document.querySelector('#incoming').value))
-      })
+      document.querySelector("form").addEventListener("submit", (ev) => {
+        ev.preventDefault();
+        p.signal(JSON.parse(document.querySelector("#incoming").value));
+      });
 
-      p.on('connect', () => {
-        console.log('CONNECT')
-        p.send('whatever' + Math.random())
-      })
+      p.on("connect", () => {
+        console.log("CONNECT");
+        p.send("whatever" + Math.random());
+      });
 
-      p.on('data', data => {
-        console.log('data: ' + data)
-      })
+      p.on("data", (data) => {
+        console.log("data: " + data);
+      });
     </script>
   </body>
 </html>
@@ -122,7 +124,7 @@ Now you have a direct P2P connection between two browsers!
 
 This example create two peers **in the same web page**.
 
-In a real-world application, *you would never do this*. The sender and receiver `Peer`
+In a real-world application, _you would never do this_. The sender and receiver `Peer`
 instances would exist in separate browsers. A "signaling server" (usually implemented with
 websockets) would be used to exchange signaling data between the two browsers until a
 peer-to-peer connection is established.
@@ -130,30 +132,30 @@ peer-to-peer connection is established.
 ### data channels
 
 ```js
-var Peer = require('simple-peer')
+var Peer = require("simple-peer");
 
-var peer1 = new Peer({ initiator: true })
-var peer2 = new Peer()
+var peer1 = new Peer({ initiator: true });
+var peer2 = new Peer();
 
-peer1.on('signal', data => {
+peer1.on("signal", (data) => {
   // when peer1 has signaling data, give it to peer2 somehow
-  peer2.signal(data)
-})
+  peer2.signal(data);
+});
 
-peer2.on('signal', data => {
+peer2.on("signal", (data) => {
   // when peer2 has signaling data, give it to peer1 somehow
-  peer1.signal(data)
-})
+  peer1.signal(data);
+});
 
-peer1.on('connect', () => {
+peer1.on("connect", () => {
   // wait for 'connect' event before using the data channel
-  peer1.send('hey peer2, how is it going?')
-})
+  peer1.send("hey peer2, how is it going?");
+});
 
-peer2.on('data', data => {
+peer2.on("data", (data) => {
   // got a data channel message
-  console.log('got a message from peer1: ' + data)
-})
+  console.log("got a message from peer1: " + data);
+});
 ```
 
 ### video/voice
@@ -161,38 +163,41 @@ peer2.on('data', data => {
 Video/voice is also super simple! In this example, peer1 sends video to peer2.
 
 ```js
-var Peer = require('simple-peer')
+var Peer = require("simple-peer");
 
 // get video/voice stream
-navigator.mediaDevices.getUserMedia({
-  video: true,
-  audio: true
-}).then(gotMedia).catch(() => {})
-
-function gotMedia (stream) {
-  var peer1 = new Peer({ initiator: true, stream: stream })
-  var peer2 = new Peer()
-
-  peer1.on('signal', data => {
-    peer2.signal(data)
+navigator.mediaDevices
+  .getUserMedia({
+    video: true,
+    audio: true,
   })
+  .then(gotMedia)
+  .catch(() => {});
 
-  peer2.on('signal', data => {
-    peer1.signal(data)
-  })
+function gotMedia(stream) {
+  var peer1 = new Peer({ initiator: true, stream: stream });
+  var peer2 = new Peer();
 
-  peer2.on('stream', stream => {
+  peer1.on("signal", (data) => {
+    peer2.signal(data);
+  });
+
+  peer2.on("signal", (data) => {
+    peer1.signal(data);
+  });
+
+  peer2.on("stream", (stream) => {
     // got remote video stream, now let's show it in a video tag
-    var video = document.querySelector('video')
+    var video = document.querySelector("video");
 
-    if ('srcObject' in video) {
-      video.srcObject = stream
+    if ("srcObject" in video) {
+      video.srcObject = stream;
     } else {
-      video.src = window.URL.createObjectURL(stream) // for older browsers
+      video.src = window.URL.createObjectURL(stream); // for older browsers
     }
 
-    video.play()
-  })
+    video.play();
+  });
 }
 ```
 
@@ -206,41 +211,44 @@ It is also possible to establish a data-only connection at first, and later add
 a video/voice stream, if desired.
 
 ```js
-var Peer = require('simple-peer') // create peer without waiting for media
+var Peer = require("simple-peer"); // create peer without waiting for media
 
-var peer1 = new Peer({ initiator: true }) // you don't need streams here
-var peer2 = new Peer()
+var peer1 = new Peer({ initiator: true }); // you don't need streams here
+var peer2 = new Peer();
 
-peer1.on('signal', data => {
-  peer2.signal(data)
-})
+peer1.on("signal", (data) => {
+  peer2.signal(data);
+});
 
-peer2.on('signal', data => {
-  peer1.signal(data)
-})
+peer2.on("signal", (data) => {
+  peer1.signal(data);
+});
 
-peer2.on('stream', stream => {
+peer2.on("stream", (stream) => {
   // got remote video stream, now let's show it in a video tag
-  var video = document.querySelector('video')
+  var video = document.querySelector("video");
 
-  if ('srcObject' in video) {
-    video.srcObject = stream
+  if ("srcObject" in video) {
+    video.srcObject = stream;
   } else {
-    video.src = window.URL.createObjectURL(stream) // for older browsers
+    video.src = window.URL.createObjectURL(stream); // for older browsers
   }
 
-  video.play()
-})
+  video.play();
+});
 
-function addMedia (stream) {
-  peer1.addStream(stream) // <- add streams to peer dynamically
+function addMedia(stream) {
+  peer1.addStream(stream); // <- add streams to peer dynamically
 }
 
 // then, anytime later...
-navigator.mediaDevices.getUserMedia({
-  video: true,
-  audio: true
-}).then(addMedia).catch(() => {})
+navigator.mediaDevices
+  .getUserMedia({
+    video: true,
+    audio: true,
+  })
+  .then(addMedia)
+  .catch(() => {});
 ```
 
 ### in node
@@ -248,11 +256,11 @@ navigator.mediaDevices.getUserMedia({
 To use this library in node, pass in `opts.wrtc` as a parameter (see [the constructor options](#peer--new-peeropts)):
 
 ```js
-var Peer = require('simple-peer')
-var wrtc = require('wrtc')
+var Peer = require("simple-peer");
+var wrtc = require("wrtc");
 
-var peer1 = new Peer({ initiator: true, wrtc: wrtc })
-var peer2 = new Peer({ wrtc: wrtc })
+var peer1 = new Peer({ initiator: true, wrtc: wrtc });
+var peer2 = new Peer({ wrtc: wrtc });
 ```
 
 ## api
@@ -296,6 +304,7 @@ The options do the following:
 - `streams` - an array of MediaStreams returned from [`getUserMedia`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia)
 - `trickle` - set to `false` to disable [trickle ICE](http://webrtchacks.com/trickle-ice/) and get a single 'signal' event (slower)
 - `wrtc` - custom webrtc implementation, mainly useful in node to specify in the [wrtc](https://npmjs.com/package/wrtc) package. Contains an object with the properties:
+
   - [`RTCPeerConnection`](https://www.w3.org/TR/webrtc/#dom-rtcpeerconnection)
   - [`RTCSessionDescription`](https://www.w3.org/TR/webrtc/#dom-rtcsessiondescription)
   - [`RTCIceCandidate`](https://www.w3.org/TR/webrtc/#dom-rtcicecandidate)
@@ -356,7 +365,7 @@ event on the stream.
 Detect native WebRTC support in the javascript environment.
 
 ```js
-var Peer = require('simple-peer')
+var Peer = require("simple-peer");
 
 if (Peer.WEBRTC_SUPPORT) {
   // webrtc support!
@@ -372,12 +381,12 @@ if (Peer.WEBRTC_SUPPORT) {
 channel.
 
 ```js
-var peer = new Peer(opts)
+var peer = new Peer(opts);
 // ... signaling ...
-peer.write(new Buffer('hey'))
-peer.on('data', function (chunk) {
-  console.log('got a chunk', chunk)
-})
+peer.write(new Buffer("hey"));
+peer.on("data", function (chunk) {
+  console.log("got a chunk", chunk);
+});
 ```
 
 ## events
@@ -385,8 +394,9 @@ peer.on('data', function (chunk) {
 `Peer` objects are instance of `EventEmitter`. Take a look at the [nodejs events documentation](https://nodejs.org/api/events.html) for more information.
 
 Example of removing all registered **close**-event listeners:
+
 ```js
-peer.removeAllListeners('close')
+peer.removeAllListeners("close");
 ```
 
 ### `peer.on('signal', data => {})`
@@ -395,7 +405,7 @@ Fired when the peer wants to send signaling data to the remote peer.
 
 **It is the responsibility of the application developer (that's you!) to get this data to
 the other peer.** This usually entails using a websocket signaling server. This data is an
-`Object`, so  remember to call `JSON.stringify(data)` to serialize it first. Then, simply
+`Object`, so remember to call `JSON.stringify(data)` to serialize it first. Then, simply
 call `peer.signal(data)` on the remote peer.
 
 (Be sure to listen to this event immediately to avoid missing it. For `initiator: true`
@@ -417,15 +427,15 @@ Received a message from the remote peer (via the data channel).
 Received a remote video stream, which can be displayed in a video tag:
 
 ```js
-peer.on('stream', stream => {
-  var video = document.querySelector('video')
-  if ('srcObject' in video) {
-    video.srcObject = stream
+peer.on("stream", (stream) => {
+  var video = document.querySelector("video");
+  if ("srcObject" in video) {
+    video.srcObject = stream;
   } else {
-    video.src = window.URL.createObjectURL(stream)
+    video.src = window.URL.createObjectURL(stream);
   }
-  video.play()
-})
+  video.play();
+});
 ```
 
 ### `peer.on('track', (track, stream) => {})`
@@ -447,6 +457,7 @@ Fired when a fatal error occurs. Usually, this means bad signaling data was rece
 Errors returned by the `error` event have an `err.code` property that will indicate the origin of the failure.
 
 Possible error codes:
+
 - `ERR_WEBRTC_SUPPORT`
 - `ERR_CREATE_OFFER`
 - `ERR_CREATE_ANSWER`
@@ -457,7 +468,6 @@ Possible error codes:
 - `ERR_SIGNALING`
 - `ERR_DATA_CHANNEL`
 - `ERR_CONNECTION_FAILURE`
-
 
 ## connecting more than 2 peers?
 
@@ -482,96 +492,96 @@ For clarity, here is the code to connect 3 peers together:
 
 ```js
 // These are peer1's connections to peer2 and peer3
-var peer2 = new Peer({ initiator: true })
-var peer3 = new Peer({ initiator: true })
+var peer2 = new Peer({ initiator: true });
+var peer3 = new Peer({ initiator: true });
 
-peer2.on('signal', data => {
+peer2.on("signal", (data) => {
   // send this signaling data to peer2 somehow
-})
+});
 
-peer2.on('connect', () => {
-  peer2.send('hi peer2, this is peer1')
-})
+peer2.on("connect", () => {
+  peer2.send("hi peer2, this is peer1");
+});
 
-peer2.on('data', data => {
-  console.log('got a message from peer2: ' + data)
-})
+peer2.on("data", (data) => {
+  console.log("got a message from peer2: " + data);
+});
 
-peer3.on('signal', data => {
+peer3.on("signal", (data) => {
   // send this signaling data to peer3 somehow
-})
+});
 
-peer3.on('connect', () => {
-  peer3.send('hi peer3, this is peer1')
-})
+peer3.on("connect", () => {
+  peer3.send("hi peer3, this is peer1");
+});
 
-peer3.on('data', data => {
-  console.log('got a message from peer3: ' + data)
-})
+peer3.on("data", (data) => {
+  console.log("got a message from peer3: " + data);
+});
 ```
 
 #### Peer 2
 
 ```js
 // These are peer2's connections to peer1 and peer3
-var peer1 = new Peer()
-var peer3 = new Peer({ initiator: true })
+var peer1 = new Peer();
+var peer3 = new Peer({ initiator: true });
 
-peer1.on('signal', data => {
+peer1.on("signal", (data) => {
   // send this signaling data to peer1 somehow
-})
+});
 
-peer1.on('connect', () => {
-  peer1.send('hi peer1, this is peer2')
-})
+peer1.on("connect", () => {
+  peer1.send("hi peer1, this is peer2");
+});
 
-peer1.on('data', data => {
-  console.log('got a message from peer1: ' + data)
-})
+peer1.on("data", (data) => {
+  console.log("got a message from peer1: " + data);
+});
 
-peer3.on('signal', data => {
+peer3.on("signal", (data) => {
   // send this signaling data to peer3 somehow
-})
+});
 
-peer3.on('connect', () => {
-  peer3.send('hi peer3, this is peer2')
-})
+peer3.on("connect", () => {
+  peer3.send("hi peer3, this is peer2");
+});
 
-peer3.on('data', data => {
-  console.log('got a message from peer3: ' + data)
-})
+peer3.on("data", (data) => {
+  console.log("got a message from peer3: " + data);
+});
 ```
 
 #### Peer 3
 
 ```js
 // These are peer3's connections to peer1 and peer2
-var peer1 = new Peer()
-var peer2 = new Peer()
+var peer1 = new Peer();
+var peer2 = new Peer();
 
-peer1.on('signal', data => {
+peer1.on("signal", (data) => {
   // send this signaling data to peer1 somehow
-})
+});
 
-peer1.on('connect', () => {
-  peer1.send('hi peer1, this is peer3')
-})
+peer1.on("connect", () => {
+  peer1.send("hi peer1, this is peer3");
+});
 
-peer1.on('data', data => {
-  console.log('got a message from peer1: ' + data)
-})
+peer1.on("data", (data) => {
+  console.log("got a message from peer1: " + data);
+});
 
-peer2.on('signal', data => {
+peer2.on("signal", (data) => {
   // send this signaling data to peer2 somehow
-})
+});
 
-peer2.on('connect', () => {
-  peer2.send('hi peer2, this is peer3')
-})
+peer2.on("connect", () => {
+  peer2.send("hi peer2, this is peer3");
+});
 
-peer2.on('data', data => {
-  console.log('got a message from peer2: ' + data)
-})
+peer2.on("data", (data) => {
+  console.log("got a message from peer2: " + data);
+});
 ```
 
 ## memory usage
@@ -586,7 +596,6 @@ the same contract. It will potentially buffer the data and call
 `channel.send()` at a future point in time, so definitely don't assume it's
 safe to mutate the buffer.
 
-
 ## connection does not work on some networks?
 
 If a direct connection fails, in particular, because of NAT traversal and/or firewalls,
@@ -598,7 +607,6 @@ In order to use a TURN server, you must specify the `config` option to the `Peer
 constructor. See the API docs above.
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
-
 
 ## Who is using `simple-peer`?
 
@@ -648,7 +656,7 @@ constructor. See the API docs above.
 - [WebDrop.Space](https://WebDrop.Space) - Share files and messages across devices. Cross-platform, no installation alternative to AirDrop, Xender. [Source Code](https://github.com/subins2000/WebDrop)
 - [Speakrandom](https://speakrandom.com) - Voice-chat social network using simple-peer to create audio conferences!
 
-- *Your app here! - send a PR!*
+- _Your app here! - send a PR!_
 
 ## license
 

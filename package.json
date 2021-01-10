@@ -1,7 +1,7 @@
 {
-  "name": "simple-peer",
+  "name": "@jhaynie/simple-peer",
   "description": "Simple one-to-one WebRTC video/voice and data channels",
-  "version": "9.9.3",
+  "version": "1.0.0",
   "author": {
     "name": "Feross Aboukhadijeh",
     "email": "feross@feross.org",
@@ -11,13 +11,11 @@
     "url": "https://github.com/feross/simple-peer/issues"
   },
   "dependencies": {
-    "buffer": "^6.0.2",
     "debug": "^4.2.0",
     "err-code": "^2.0.3",
     "get-browser-rtc": "^1.0.2",
     "queue-microtask": "^1.2.0",
-    "randombytes": "^2.1.0",
-    "readable-stream": "^3.6.0"
+    "randombytes": "^2.1.0"
   },
   "devDependencies": {
     "airtap": "^3.0.0",
